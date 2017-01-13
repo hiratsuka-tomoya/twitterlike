@@ -21,15 +21,15 @@ public class SignUpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 
 		request.getRequestDispatcher("signup.jsp").forward(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 
 		List<String> messages = new ArrayList<String>();
 
@@ -55,14 +55,21 @@ public class SignUpServlet extends HttpServlet {
 	private boolean isValid(HttpServletRequest request, List<String> messages) {
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
+		String email = request.getParameter("email");
 
 		if (StringUtils.isEmpty(account) == true) {
 			messages.add("アカウント名を入力してください");
+		} else if (new UserService().getUser(account) == null) {
+			messages.add("そのアカウント名は登録できません");
 		}
 		if (StringUtils.isEmpty(password) == true) {
 			messages.add("パスワードを入力してください");
+		} else if (new UserService().getUser(email) == null) {
+			messages.add("そのメールアドレスは登録できません");
 		}
-		// TODO アカウントが既に利用されていないか、メールアドレスが既に登録されていないかなどの確認も必要
+		// if (email.matches("*@*")) {
+		// messages.add("メールアドレスの形式が不正です");
+		// }
 		if (messages.size() == 0) {
 			return true;
 		} else {

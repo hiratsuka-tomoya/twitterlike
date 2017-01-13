@@ -216,4 +216,31 @@ public class UserDao {
 		}
 	}
 
+	public User getUser(Connection connection, String accountOrEmail) {
+
+		PreparedStatement ps = null;
+		try {
+			String sql = "SELECT * FROM user WHERE (account = ? OR email = ?)";
+
+			ps = connection.prepareStatement(sql);
+			ps.setString(1, accountOrEmail);
+			ps.setString(2, accountOrEmail);
+
+			ResultSet rs = ps.executeQuery();
+			List<User> userList = toUserList(rs);
+			if (userList.isEmpty() == true) {
+				return null;
+			} else if (2 <= userList.size()) {
+				//ID重複
+				throw new IllegalStateException("2 <= userList.size()");
+			} else {
+				return userList.get(0);
+			}
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
+
 }
