@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+
 import chapter6.beans.User;
 import chapter6.service.LoginService;
 
@@ -19,34 +21,60 @@ public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 
 		request.getRequestDispatcher("login.jsp").forward(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 
-		String accountOrEmail = request.getParameter("accountOrEmail");
-		String password = request.getParameter("password");
-
-		LoginService loginService = new LoginService();
-		User user = loginService.login(accountOrEmail, password);
-
+		List<String> messages = new ArrayList<String>();
 		HttpSession session = request.getSession();
-		if (user != null) {
 
-			session.setAttribute("loginUser", user);
-			response.sendRedirect("./");
+		if (isValid(request, messages) == true) {
+
+			String accountOrEmail = request.getParameter("accountOrEmail");
+			String password = request.getParameter("password");
+
+			LoginService loginService = new LoginService();
+			User user = loginService.login(accountOrEmail, password);
+
+			if (user != null) {
+				session.setAttribute("loginUser", user);
+				response.sendRedirect("./");
+			} else {
+				messages.add("ログインに失敗しました。");
+				session.setAttribute("errorMessages", messages);
+				response.sendRedirect("login");
+			}
+
 		} else {
-
-			List<String> messages = new ArrayList<String>();
-			messages.add("ログインに失敗しました。");
 			session.setAttribute("errorMessages", messages);
 			response.sendRedirect("login");
 		}
 	}
 
+	private boolean isValid(HttpServletRequest request, List<String> messages) {
+		HttpSession session = request.getSession();
+		String accountOrEmail = request.getParameter("accountOrEmail");
+		String password = request.getParameter("password");
+
+		if (StringUtils.isEmpty(accountOrEmail) == true) {
+			messages.add("アカウント名もしくはメールアドレスを入力してください");
+		} else {
+			session.setAttribute("accountOrEmail", accountOrEmail);
+		}
+		if (StringUtils.isEmpty(password) == true) {
+			messages.add("パスワードを入力してください");
+		}
+
+		if (messages.size() == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

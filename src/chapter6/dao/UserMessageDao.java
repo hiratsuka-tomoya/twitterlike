@@ -35,6 +35,27 @@ public class UserMessageDao {
 		}
 	}
 
+	public List<UserMessage> getUserMessages(Connection connection, int num, String whereColumn, String whereValue) {
+
+		PreparedStatement ps = null;
+		try {
+			StringBuilder sql = new StringBuilder();
+			sql.append("SELECT * FROM user_message ");
+			sql.append("WHERE " + whereColumn + " = '" + whereValue + "'");
+			sql.append("ORDER BY insert_date DESC limit " + num);
+
+			ps = connection.prepareStatement(sql.toString());
+
+			ResultSet rs = ps.executeQuery();
+			List<UserMessage> ret = toUserMessageList(rs);
+			return ret;
+		} catch (SQLException e) {
+			throw new SQLRuntimeException(e);
+		} finally {
+			close(ps);
+		}
+	}
+
 	private List<UserMessage> toUserMessageList(ResultSet rs)
 			throws SQLException {
 

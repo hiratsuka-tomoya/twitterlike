@@ -34,6 +34,8 @@ public class SignUpServlet extends HttpServlet {
 		List<String> messages = new ArrayList<String>();
 
 		HttpSession session = request.getSession();
+		session.removeAttribute("account");
+		session.removeAttribute("email");
 		if (isValid(request, messages) == true) {
 
 			User user = new User();
@@ -48,28 +50,41 @@ public class SignUpServlet extends HttpServlet {
 			response.sendRedirect("./");
 		} else {
 			session.setAttribute("errorMessages", messages);
+			session.setAttribute("name", request.getParameter("name"));
 			response.sendRedirect("signup");
 		}
 	}
 
 	private boolean isValid(HttpServletRequest request, List<String> messages) {
+		HttpSession session = request.getSession();
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
 		String email = request.getParameter("email");
 
+		session.removeAttribute("account");
+		session.removeAttribute("email");
+
 		if (StringUtils.isEmpty(account) == true) {
 			messages.add("アカウント名を入力してください");
-		} else if (new UserService().getUser(account) == null) {
+		} else if (new UserService().getUser(account) != null) {
 			messages.add("そのアカウント名は登録できません");
+		} else {
+			session.setAttribute("account", account);
 		}
 		if (StringUtils.isEmpty(password) == true) {
 			messages.add("パスワードを入力してください");
-		} else if (new UserService().getUser(email) == null) {
-			messages.add("そのメールアドレスは登録できません");
 		}
-		// if (email.matches("*@*")) {
-		// messages.add("メールアドレスの形式が不正です");
-		// }
+		if (StringUtils.isNotEmpty(email) == true) {
+			if (email.matches("\\w+@\\w+") == false) {
+				messages.add("メールアドレスの形式が不正です");
+			} else if (new UserService().getUser(email) != null) {
+				messages.add("そのメールアドレスは登録できません");
+			}
+			else {
+				session.setAttribute("email", email);
+			}
+		}
+
 		if (messages.size() == 0) {
 			return true;
 		} else {

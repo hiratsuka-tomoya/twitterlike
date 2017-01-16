@@ -17,14 +17,16 @@ public class MessageDao {
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append("INSERT INTO message ( ");
-			sql.append("id");
-			sql.append(", user_id");
+//			sql.append("id");
+//			sql.append(", user_id");
+			sql.append("user_id");
 			sql.append(", text");
 			sql.append(", insert_date");
 			sql.append(", update_date");
 			sql.append(") VALUES (");
-			sql.append("NEXT VALUE FOR my_seq "); // id
-			sql.append(", ?"); // user_id
+//			sql.append("NEXT VALUE FOR my_seq "); // id
+//			sql.append(", ?"); // user_id
+			sql.append("?"); // user_id
 			sql.append(", ?"); // text
 			sql.append(", CURRENT_TIMESTAMP"); // insert_date
 			sql.append(", CURRENT_TIMESTAMP"); // update_date

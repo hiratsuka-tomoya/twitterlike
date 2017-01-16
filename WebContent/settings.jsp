@@ -6,11 +6,12 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>ユーザー登録</title>
-	<link href="./css/style.css" rel="stylesheet" type="text/css">
+	<title>${loginUser.account}の設定</title>
+	<link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div class="main-contents">
+
 <c:if test="${ not empty errorMessages }">
 	<div class="errorMessages">
 		<ul>
@@ -21,22 +22,26 @@
 	</div>
 	<c:remove var="errorMessages" scope="session"/>
 </c:if>
-<form action="signup" method="post"><br />
+
+<form action="settings" method="post" enctype="multipart/form-data"><br />
 	<label for="name">名前</label>
-	<input name="name" value="${name}" id="name"/>（名前はあなたの公開プロフィールに表示されます）<br />
+	<input name="name" value="${editUser.name}" id="name"/>（名前はあなたの公開プロフィールに表示されます）<br />
 
 	<label for="account">アカウント名</label>
-	<input name="account" value="${account}" id="account"/>（あなたの公開プロフィール: http://localhost:8080/Chapter6/?account=アカウント名）<br />
+	<input name="account" value="${editUser.account}" />（あなたの公開プロフィール:http://localhost:8080/?account=アカウント名）<br />
 
 	<label for="password">パスワード</label>
 	<input name="password" type="password" id="password"/> <br />
 
 	<label for="email">メールアドレス</label>
-	<input name="email" value="${email}" id="email"/> <br />
+	<input name="email" value="${editUser.email}" id="email"/> <br />
 
 	<label for="description">説明</label>
-	<textarea name="description" cols="35" rows="5" id="description"></textarea> <br />
-
+	<textarea name="description" cols="35" rows="5" id="description"><c:out value="${editUser.description}" /></textarea> <br />
+<%--
+	<label for="icon">アイコン</label>
+	<input type="file" name="icon" id="icon"> <br />
+--%>
 	<input type="submit" value="登録" /> <br />
 	<a href="./">戻る</a>
 </form>

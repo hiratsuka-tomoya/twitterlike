@@ -151,9 +151,9 @@ public class UserDao {
 			sql.append(", password = ?");
 			sql.append(", description = ?");
 			sql.append(", update_date = CURRENT_TIMESTAMP");
-			if (user.getIcon() != null) {
-				sql.append(", icon = ?");
-			}
+//			if (user.getIcon() != null) {
+//				sql.append(", icon = ?");
+//			}
 			sql.append(" WHERE");
 			sql.append(" id = ?");
 			sql.append(" AND");
