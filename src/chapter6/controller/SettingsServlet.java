@@ -45,11 +45,11 @@ public class SettingsServlet extends HttpServlet {
 		List<String> messages = new ArrayList<String>();
 
 		HttpSession session = request.getSession();
-
+		User loginUser = (User) session.getAttribute("loginUser");
 		User editUser = getEditUser(request);
 		session.setAttribute("editUser", editUser);
 
-		if (isValid(request, messages, editUser) == true) {
+		if (isValid(request, messages, loginUser) == true) {
 
 			try {
 				new UserService().update(editUser);
@@ -106,7 +106,7 @@ public class SettingsServlet extends HttpServlet {
 //		}
 //	}
 
-	private boolean isValid(HttpServletRequest request, List<String> messages, User editUser) {
+	private boolean isValid(HttpServletRequest request, List<String> messages, User loginUser) {
 
 		String account = request.getParameter("account");
 		String password = request.getParameter("password");
@@ -115,7 +115,7 @@ public class SettingsServlet extends HttpServlet {
 		if (StringUtils.isEmpty(account) == true) {
 			messages.add("アカウント名を入力してください");
 		} else if (new UserService().getUser(account) != null) {
-			if (account != editUser.getAccount()) {
+			if (!account.equals(loginUser.getAccount())) {
 				messages.add("そのアカウント名は登録できません");
 			}
 		}
@@ -126,7 +126,7 @@ public class SettingsServlet extends HttpServlet {
 			if (email.matches("\\w+@\\w+") == false) {
 				messages.add("メールアドレスの形式が不正です");
 			} else if (new UserService().getUser(email) != null) {
-				if (email != editUser.getEmail()) {
+				if (!email.equals(loginUser.getEmail())) {
 					messages.add("そのメールアドレスは登録できません");
 				}
 			}
